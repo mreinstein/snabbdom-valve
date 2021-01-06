@@ -2,7 +2,7 @@
 
 An interactive, physically based ball valve handle component implemented in snabbdom.
 
-![alt text](example.png "screenshot" =150x)
+![alt text](example.png "screenshot")
 
 
 ## features
