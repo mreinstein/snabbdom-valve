@@ -2,11 +2,12 @@
 
 An interactive, physically based ball valve handle component implemented in snabbdom.
 
-![alt text](example.png "screenshot")
+![alt text](example.png "screenshot" =150x)
 
 
 ## features
 * renders with svg
+* handle with spring modeled movement
 * optional, subtle sound effect support for more impactful experience
 * data oriented, functional design
 * tiny! (~ 250 lines of code)
