@@ -1,2 +1,19 @@
 # snabbdom-valve
-an interactive physically based handle component implemented in snabbdom
+
+An interactive, physically based ball valve handle component implemented in snabbdom.
+
+![alt text](example.png "screenshot")
+
+
+## features
+* renders with svg
+* optional, subtle sound effect support for more impactful experience
+* data oriented, functional design
+* tiny! (~ 250 lines of code)
+
+
+## TODO
+* usage instructions
+* configurable sounds
+* fix the handle positioning within the viewbox
+* npm module
