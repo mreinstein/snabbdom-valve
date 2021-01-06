@@ -17,4 +17,6 @@ An interactive, physically based ball valve handle component implemented in snab
 * usage instructions
 * configurable sounds
 * fix the handle positioning within the viewbox
+* arrows indicating available handle motion
+* play the in-between audio clicks more uniformly
 * npm module
