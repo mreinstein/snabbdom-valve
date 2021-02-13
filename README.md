@@ -17,15 +17,15 @@ An interactive, physically based ball valve handle component implemented in snab
 ## usage
 
 ```javascript
-import html  from 'https://cdn.skypack.dev/snabby'
-import valve from 'https://cdn.skypack.dev/snabbdom-valve'
+import html  from 'snabby'
+import valve from 'snabbdom-valve'
 
 
 let currentVnode = document.querySelector('main') // where to inject the tabs panel
 
 const model = valve.init({
-	// optional sound array, you can provide sound effects.
-	// you can provide multiple items in an array and one will be chosen at run time.
+    // optional sound effects
+    // you can provide multiple items in an array and one will be chosen at run time.
     sounds: {
     	done: [ '/handle-done.wav' ],
     	click: [ '/click-1.wav' ]

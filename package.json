@@ -1,0 +1,33 @@
+{
+  "name": "snabbdom-valve",
+  "version": "0.1.0",
+  "description": "An interactive, physically based ball valve handle component implemented in snabbdom.",
+  "main": "snabbdom-valve.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mreinstein/snabbdom-valve.git"
+  },
+  "keywords": [
+    "snabbdom",
+    "valve",
+    "snabby"
+  ],
+  "author": "Mike Reinstein",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mreinstein/snabbdom-valve/issues"
+  },
+  "engines": {
+    "node": ">=12.17"
+  },
+  "homepage": "https://github.com/mreinstein/snabbdom-valve#readme",
+  "dependencies": {
+    "clamp": "^1.0.1",
+    "howler": "^2.2.1",
+    "snabby": "^3.0.0"
+  }
+}
