@@ -61,6 +61,7 @@ valve.destroy(model)
 
 ## TODO
 * play the in-between audio clicks more uniformly
+* consider replacing howler with native html5 audio (it's kind of a large module)
 * cleanup audio resources on `destroy`
 * fix the handle positioning within the viewbox
 * arrows indicating available handle motion
