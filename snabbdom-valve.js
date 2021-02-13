@@ -3,14 +3,6 @@ import html     from 'https://cdn.skypack.dev/snabby'
 import { Howl } from 'https://cdn.skypack.dev/howler'
 
 
-const handleDone = new Audio('/handle-done.wav')
-
-const sounds = [
-    //new Howl({ src: [ '/click-0.wav' ] }),
-    new Howl({ src: [ '/click-1.wav' ] })
-    //,new Howl({ src: [ '/click-2.wav' ] })
-]
-
 const TRANSITION_TABLE = {
     initializing: {
         'READY': 'locked'
@@ -58,7 +50,7 @@ const STATE_ENTRY_FUNCTIONS = {
             model.angle = clamp(model.angle + block.v * frameRate, 1, 89)
 
             if (Math.floor(model.angle) % 2 === 0)
-                sounds[Math.floor(Math.random() * sounds.length)].play()
+                _playSound(model.sounds, 'click')
 
             update()
 
@@ -90,7 +82,7 @@ const STATE_ENTRY_FUNCTIONS = {
             model.angle = clamp(model.angle - block.v * frameRate, 1, 89)
 
             if (Math.floor(model.angle) % 4 === 0)
-                sounds[Math.floor(Math.random() * sounds.length)].play()
+                _playSound(model.sounds, 'click')
 
             update()
 
@@ -111,12 +103,12 @@ const MOUSE_MOVEMENT_FUNCTIONS = {
         if (newAngle < model.angle) {
             model.angle = newAngle
             if (Math.floor(model.angle) % 4 === 0)
-                sounds[Math.floor(Math.random() * sounds.length)].play()
+                _playSound(model.sounds, 'click')
             update()
         }
 
         if (model.angle === 1) {
-             handleDone.play()
+            _playSound(model.sounds, 'done')
             _raiseEvent('DONE', model, update)
         }
     },
@@ -125,15 +117,22 @@ const MOUSE_MOVEMENT_FUNCTIONS = {
         if (newAngle > model.angle) {
             model.angle = newAngle
             if (Math.floor(model.angle) % 4 === 0)
-                sounds[Math.floor(Math.random() * sounds.length)].play()
+                _playSound(model.sounds, 'click')
             update()
         }
 
         if (model.angle === 89) {
-             handleDone.play()
+            _playSound(model.sounds, 'done')
             _raiseEvent('DONE', model, update)
         }
     }
+}
+
+
+function _playSound (sounds, type) {
+    const s = sounds ? sounds[type] : undefined
+    if (s && s.length)
+        s[Math.floor(Math.random() * s.length)].play()
 }
 
 
@@ -170,6 +169,18 @@ function _raiseEvent (eventName, model, update) {
 
 
 function init (options={}) {
+    let sounds
+
+    if (options.sounds && (options.sounds.click || options.sounds.done)) {
+        sounds = { }
+
+        if (options.sounds.click)
+            sounds.click = options.sounds.click.map((s) => new Howl({ src: [ s ] }) )
+        
+        if (options.sounds.done)
+            sounds.done = options.sounds.done.map((s) => new Howl({ src: [ s ] }) )
+    }
+
     return {
         elm: undefined,
         angle: 89,
@@ -188,7 +199,8 @@ function init (options={}) {
             block: {
                 v: 0, mass: 3.0
             }
-        }
+        },
+        sounds
     }
 }
 
@@ -242,4 +254,11 @@ function view (model, update) {
 }
 
 
-export default { init, view }
+function destroy (model) {
+    if (model.sounds) {
+        // TODO: cleanup sounds
+    }
+}
+
+
+export default { init, view, destroy }
