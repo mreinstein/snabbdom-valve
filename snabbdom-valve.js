@@ -1,6 +1,6 @@
-import clamp    from 'https://cdn.skypack.dev/clamp'
-import html     from 'https://cdn.skypack.dev/snabby'
-import { Howl } from 'https://cdn.skypack.dev/howler'
+import clamp    from 'clamp'
+import html     from 'snabby'
+import { Howl } from 'howler'
 
 
 const TRANSITION_TABLE = {
