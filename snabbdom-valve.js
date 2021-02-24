@@ -255,8 +255,21 @@ function view (model, update) {
 
 
 function destroy (model) {
-    if (model.sounds) {
-        // TODO: cleanup sounds
+    if (!model.sounds)
+        return
+
+    if (model.sounds.click) {
+        for (const s of model.sounds.click)
+            s.unload()
+
+        model.sounds.click.length = 0
+    }
+
+    if (model.sounds.done) {
+        for (const s of model.sounds.done)
+            s.unload()
+
+        model.sounds.done.length = 0
     }
 }
 
