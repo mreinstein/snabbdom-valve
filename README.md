@@ -11,7 +11,7 @@ An interactive, physically based ball valve handle component implemented in snab
 * handle with spring modeled movement
 * optional, subtle sound effect support for more impactful experience
 * data oriented, functional design
-* tiny! (~ 250 lines of code)
+* tiny! (~ 350 lines of code)
 
 
 ## usage
@@ -61,7 +61,6 @@ valve.destroy(model)
 
 ## TODO
 
-* pixel-perfect drag handling (there is a little oddness at the very beginning of the drag)
 * replace howler with native html5 audio? (Howler is kind of a large module)
 * tighten up handle positioning within the SVG viewbox
 * arrows indicating available handle motion?

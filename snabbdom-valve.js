@@ -3,6 +3,9 @@ import html     from 'snabby'
 import { Howl } from 'howler'
 
 
+const MAX_ANGLE_EXTENT = 90
+const MIN_ANGLE_EXTENT = 0
+
 const TRANSITION_TABLE = {
     initializing: {
         'READY': 'locked'
@@ -42,7 +45,7 @@ const STATE_ENTRY_FUNCTIONS = {
         const step = function () {
             const { b, k, block, spring_length } = model.spring
 
-            const F_spring = k * ((89 - model.angle) - spring_length)
+            const F_spring = k * ((MAX_ANGLE_EXTENT - model.angle) - spring_length)
             //const F_spring = k * ( (block.x - wallWidth) - spring_length )
             const F_damper = b * block.v
 
@@ -51,7 +54,7 @@ const STATE_ENTRY_FUNCTIONS = {
 
             const angleDelta = block.v * frameRate
 
-            model.angle = clamp(model.angle + angleDelta, 1, 89)
+            model.angle = clamp(model.angle + angleDelta, MIN_ANGLE_EXTENT, MAX_ANGLE_EXTENT)
 
             angleAccum += Math.abs(angleDelta)
 
@@ -62,7 +65,7 @@ const STATE_ENTRY_FUNCTIONS = {
 
             update()
 
-            if (model.angle === 1) {
+            if (model.angle === MIN_ANGLE_EXTENT) {
                 clearInterval(interval)
                 _raiseEvent('DONE', model, update)
             }
@@ -92,7 +95,7 @@ const STATE_ENTRY_FUNCTIONS = {
 
             const angleDelta = block.v * frameRate
 
-            model.angle = clamp(model.angle - angleDelta, 1, 89)
+            model.angle = clamp(model.angle - angleDelta, MIN_ANGLE_EXTENT, MAX_ANGLE_EXTENT)
 
             angleAccum += Math.abs(angleDelta)
 
@@ -103,7 +106,7 @@ const STATE_ENTRY_FUNCTIONS = {
 
             update()
 
-            if (model.angle === 89) {
+            if (model.angle === MAX_ANGLE_EXTENT) {
                 clearInterval(interval)
                 //_playSound(model.sounds, 'done')
                 _raiseEvent('DONE', model, update)
@@ -125,11 +128,13 @@ const STATE_ENTRY_FUNCTIONS = {
 
 const MOUSE_MOVEMENT_FUNCTIONS = {
     unlocking: function (ev, model, update) {
-        const newAngle = _getAngle(model.elm, ev)
-        if (newAngle < model.angle) {
+        let newAngle = _getAngle(model.elm, ev)
 
-            model._angleAccum += Math.abs(model.angle - newAngle)
+        const delta = newAngle - model.startAngle
+        model.startAngle = newAngle
 
+        if (delta < 0) {
+            model._angleAccum += Math.abs(delta)
             const now = performance.now()
             const dt = now - model._lastClickPlay
 
@@ -139,22 +144,24 @@ const MOUSE_MOVEMENT_FUNCTIONS = {
                 model._lastClickPlay = now
             }
 
-            model.angle = newAngle
-
+            model.angle = clamp(model.angle + delta, MIN_ANGLE_EXTENT, MAX_ANGLE_EXTENT)
+            
             update()
         }
 
-        if (model.angle === 1) {
+        if (model.angle === MIN_ANGLE_EXTENT) {
             _playSound(model.sounds, 'done')
             _raiseEvent('DONE', model, update)
         }
     },
     locking: function (ev, model, update) {
-        const newAngle = _getAngle(model.elm, ev)
-        if (newAngle > model.angle) {
+        let newAngle = _getAngle(model.elm, ev)
 
-            model._angleAccum += Math.abs(model.angle - newAngle)
+        const delta = newAngle - model.startAngle
+        model.startAngle = newAngle
 
+        if (delta > 0) {
+            model._angleAccum += Math.abs(delta)
             const now = performance.now()
             const dt = now - model._lastClickPlay
 
@@ -164,12 +171,12 @@ const MOUSE_MOVEMENT_FUNCTIONS = {
                 model._lastClickPlay = now
             }
 
-            model.angle = newAngle
+            model.angle = clamp(model.angle + delta, MIN_ANGLE_EXTENT, MAX_ANGLE_EXTENT)
 
             update()
         }
 
-        if (model.angle === 89) {
+        if (model.angle === MAX_ANGLE_EXTENT) {
             _playSound(model.sounds, 'done')
             _raiseEvent('DONE', model, update)
         }
@@ -200,7 +207,8 @@ function _getAngle (elm, ev) {
     const dx = x - centerX
     const dy = y - centerY
 
-    return clamp(Math.atan2(-dy, -dx) * 180 / Math.PI, 1, 89)
+    const newAngle = Math.atan2(-dy, -dx) * 180 / Math.PI
+    return newAngle
 }
 
 
@@ -231,7 +239,7 @@ function init (options={}) {
 
     return {
         elm: undefined,
-        angle: 89,
+        angle: MAX_ANGLE_EXTENT,
         state: 'initializing',  // initializing | locked | unlocked | unlocking | locking | unwinding
         spring: {
             // spring stiffness, in kg / s^2
@@ -267,7 +275,8 @@ function view (model, update) {
         _raiseEvent('READY', model, update)
     }
 
-    const _mouseDown = function () {
+    const _mouseDown = function (ev) {
+        model.startAngle = _getAngle(model.elm, ev)
         _raiseEvent('GRASP', model, update)
         document.addEventListener('mousemove', _mouseMove, { passive: true })
         document.addEventListener('mouseup', _mouseUp)
