@@ -60,10 +60,11 @@ valve.destroy(model)
 
 
 ## TODO
-* play the in-between audio clicks more uniformly
-* consider replacing howler with native html5 audio (Howler is kind of a large module)
-* fix the handle positioning within the viewbox
-* arrows indicating available handle motion
+
+* pixel-perfect drag handling (there is a little oddness at the very beginning of the drag)
+* replace howler with native html5 audio? (Howler is kind of a large module)
+* tighten up handle positioning within the SVG viewbox
+* arrows indicating available handle motion?
 
 
 ## Notes Links and References

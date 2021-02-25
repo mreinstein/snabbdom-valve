@@ -34,23 +34,31 @@ const STATE_ENTRY_FUNCTIONS = {
         const frameRate = 1 / 60
         const frameDelay = frameRate * 1000
 
+        model.spring.block.v = 0
         let interval
+
+        let angleAccum = 0
 
         const step = function () {
             const { b, k, block, spring_length } = model.spring
 
-            const F_spring = k * ( model.angle - spring_length )
+            const F_spring = k * ((89 - model.angle) - spring_length)
             //const F_spring = k * ( (block.x - wallWidth) - spring_length )
             const F_damper = b * block.v
 
             const a = ( F_spring + F_damper ) / block.mass
             block.v += a * frameRate
-            //block.x += block.v * frameRate
 
-            model.angle = clamp(model.angle + block.v * frameRate, 1, 89)
+            const angleDelta = block.v * frameRate
 
-            if (Math.floor(model.angle) % 2 === 0)
+            model.angle = clamp(model.angle + angleDelta, 1, 89)
+
+            angleAccum += Math.abs(angleDelta)
+
+            if (angleAccum > 5) {
                 _playSound(model.sounds, 'click')
+                angleAccum = 0
+            }   
 
             update()
 
@@ -66,7 +74,10 @@ const STATE_ENTRY_FUNCTIONS = {
         const frameRate = 1 / 60
         const frameDelay = frameRate * 1000
 
+        model.spring.block.v = 0
         let interval
+
+        let angleAccum = 0
 
         const step = function () {
             const { b, k, block, spring_length } = model.spring
@@ -79,20 +90,35 @@ const STATE_ENTRY_FUNCTIONS = {
             block.v += a * frameRate
             //block.x += block.v * frameRate
 
-            model.angle = clamp(model.angle - block.v * frameRate, 1, 89)
+            const angleDelta = block.v * frameRate
 
-            if (Math.floor(model.angle) % 4 === 0)
+            model.angle = clamp(model.angle - angleDelta, 1, 89)
+
+            angleAccum += Math.abs(angleDelta)
+
+            if (angleAccum > 5) {
                 _playSound(model.sounds, 'click')
+                angleAccum = 0
+            }   
 
             update()
 
             if (model.angle === 89) {
                 clearInterval(interval)
+                //_playSound(model.sounds, 'done')
                 _raiseEvent('DONE', model, update)
             }
         }
 
         interval = setInterval(step, frameDelay, model)
+    },
+
+    unlocking: function (model, update) {
+        model._angleAccum = 0
+    },
+
+    locking: function (model, update) {
+        model._angleAccum = 0
     }
 }
 
@@ -101,9 +127,20 @@ const MOUSE_MOVEMENT_FUNCTIONS = {
     unlocking: function (ev, model, update) {
         const newAngle = _getAngle(model.elm, ev)
         if (newAngle < model.angle) {
-            model.angle = newAngle
-            if (Math.floor(model.angle) % 4 === 0)
+
+            model._angleAccum += Math.abs(model.angle - newAngle)
+
+            const now = performance.now()
+            const dt = now - model._lastClickPlay
+
+            if (model._angleAccum > 5 && dt > 20) {
                 _playSound(model.sounds, 'click')
+                model._angleAccum = 0
+                model._lastClickPlay = now
+            }
+
+            model.angle = newAngle
+
             update()
         }
 
@@ -115,9 +152,20 @@ const MOUSE_MOVEMENT_FUNCTIONS = {
     locking: function (ev, model, update) {
         const newAngle = _getAngle(model.elm, ev)
         if (newAngle > model.angle) {
-            model.angle = newAngle
-            if (Math.floor(model.angle) % 4 === 0)
+
+            model._angleAccum += Math.abs(model.angle - newAngle)
+
+            const now = performance.now()
+            const dt = now - model._lastClickPlay
+
+            if (model._angleAccum > 5 && dt > 20) {
                 _playSound(model.sounds, 'click')
+                model._angleAccum = 0
+                model._lastClickPlay = now
+            }
+
+            model.angle = newAngle
+
             update()
         }
 
@@ -200,6 +248,13 @@ function init (options={}) {
                 v: 0, mass: 3.0
             }
         },
+
+        // angle movement since last click sound played.
+        _angleAccum: 0,
+
+        // time of last click sound played
+        _lastClickPlay: 0,
+
         sounds
     }
 }
