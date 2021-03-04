@@ -21,7 +21,7 @@ import html  from 'snabby'
 import valve from 'snabbdom-valve'
 
 
-let currentVnode = document.querySelector('main') // where to inject the tabs panel
+let currentVnode = document.querySelector('div') // where to inject the tabs panel
 
 const model = valve.init({
     // optional sound effects
@@ -33,8 +33,13 @@ const model = valve.init({
 })
 
 
+function _toggle (ev) {
+    console.log('lever toggled! locked?:', ev.detail.locked)
+}
+
+
 function view (model, update) {
-    return html`<main>
+    return html`<div @on:toggle=${_toggle}>
         ${valve.view(model, update)}
     </div>`
 }
