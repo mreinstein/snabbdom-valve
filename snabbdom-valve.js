@@ -122,6 +122,25 @@ const STATE_ENTRY_FUNCTIONS = {
 
     locking: function (model, update) {
         model._angleAccum = 0
+    },
+
+    locked: function (model, update) {
+        
+        const toggled = !model.elm.locked
+        model.elm.locked = true
+        if (toggled) {
+            const event = new CustomEvent('toggle', { bubbles: true, composed: true, detail: { locked: true } })
+            model.elm.dispatchEvent(event)
+        }
+    }, 
+
+    unlocked: function (model, update) {
+        const toggled = model.elm.locked
+        model.elm.locked = false
+        if (toggled) {
+            const event = new CustomEvent('toggle', { bubbles: true, composed: true, detail: { locked: false } })
+            model.elm.dispatchEvent(event)
+        }
     }
 }
 
