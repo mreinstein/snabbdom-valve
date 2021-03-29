@@ -28,6 +28,6 @@
   "dependencies": {
     "clamp": "^1.0.1",
     "howler": "^2.2.1",
-    "snabby": "^3.0.0"
+    "snabby": "^4.0.0"
   }
 }
