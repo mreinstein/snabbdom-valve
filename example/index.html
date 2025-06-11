@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ball Valve - Example </title>
+
+  <meta name="viewport" content="width=device-width" />
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1" />
+
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  
+  <style>
+    body {
+      margin: 0;
+    }
+  </style>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "snabby": "https://cdn.skypack.dev/snabby",
+        "clamp": "https://cdn.skypack.dev/clamp",
+        "howler": "https://cdn.skypack.dev/howler",
+        "snabbdom-valve": "https://cdn.skypack.dev/snabbdom-valve"
+      }
+    }
+  </script>
+
+</head>
+<body>
+
+<div> </div>
+
+<script type="module">
+
+import html  from 'snabby'
+import valve from 'snabbdom-valve'
+
+
+let currentVnode = document.querySelector('div') // where to inject the tabs panel
+
+const model = valve.init({
+    // optional sound effects
+    // you can provide multiple items in an array and one will be chosen at run time.
+    sounds: {
+      done: [ './handle-done.wav' ],
+      click: [ './click-1.wav' ]
+    }
+})
+
+
+function _toggle (ev) {
+    console.log('lever toggled! locked?:', ev.detail.locked)
+}
+
+
+function view (model, update) {
+    return html`<div @on:toggle=${_toggle}>
+        ${valve.view(model, update)}
+    </div>`
+}
+
+
+function update () {
+    const newVnode = view(model, update)
+    currentVnode = html.update(currentVnode, newVnode)
+}
+
+
+update()
+</script>
+
+</body>
+</html>
+
